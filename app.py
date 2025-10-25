@@ -4,15 +4,16 @@ from flask import Flask, render_template, jsonify
 
 app = Flask(__name__)
 
+# 🧾 Your Google Sheet info
 SHEET_ID = "1SB41Sj9syqUObKsu3S8VKNAdTkm_J2rV0Brk7OiinfU"
-SHEET_NAME = "milk_data"  # change if your sheet name is different
+SHEET_NAME = "milk_data"  # or "milk_data" if that’s your sheet name
 
 def get_month_data(month_name):
-   url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:json&sheet={SHEET_NAME}"
+    url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:json&sheet={SHEET_NAME}"
     res = requests.get(url)
     text = res.text
 
-    # Extract only the JSON part from the response
+    # Extract only the JSON portion
     start = text.find("{")
     end = text.rfind("}") + 1
     json_text = text[start:end]
