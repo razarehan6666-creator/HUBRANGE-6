@@ -1,33 +1,38 @@
+import requests
 from flask import Flask, render_template, jsonify
-from openpyxl import load_workbook
 
 app = Flask(__name__)
 
+SHEET_ID = "1SB41Sj9syqUObKsu3S8VKNAdTkm_J2rV0Brk7OiinfU"  # Replace this with your real sheet ID
+SHEET_NAME = "milk_data"  # Or whatever your sheet is named
+
 def get_month_data(month_name):
-    wb = load_workbook("milk_data.xlsx")
-    sheet = wb.active
-    data = {}
+    url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:json&sheet={SHEET_NAME}"
+    res = requests.get(url)
+    text = res.text
+    json_text = text[text.find("{"):text.rfind("}")+1]  # clean response
+    import json
+    data = json.loads(json_text)
 
-    for row in sheet.iter_rows(min_row=2, values_only=True):
-        month, paid, days_in_month, days_absent, days_coming, amount = row[:6]
+    rows = data["table"]["rows"]
+    for row in rows:
+        month = row["c"][0]["v"]
         if month and month.strip().upper() == month_name.upper():
-            data = {
+            return {
                 "Month": month,
-                "Paid": paid,
-                "Days in Month": days_in_month,
-                "Days Absent": days_absent,
-                "Days Coming": days_coming,
-                "Amount": amount
+                "Paid": row["c"][1]["v"],
+                "Days in Month": row["c"][2]["v"],
+                "Days Absent": row["c"][3]["v"],
+                "Days Coming": row["c"][4]["v"],
+                "Amount": row["c"][5]["v"]
             }
-            break
-    wb.close()
-    return data
+    return {}
 
-@app.route('/')
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
-@app.route('/month/<month_name>')
+@app.route("/month/<month_name>")
 def month_data(month_name):
     data = get_month_data(month_name)
     if data:
@@ -36,4 +41,7 @@ def month_data(month_name):
         return jsonify({"error": "No data found for this month"})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
+
+
+
