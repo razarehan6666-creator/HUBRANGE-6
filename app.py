@@ -8,7 +8,7 @@ SHEET_ID = "1SB41Sj9syqUObKsu3S8VKNAdTkm_J2rV0Brk7OiinfU"
 SHEET_NAME = "milk_data"  # change if your sheet name is different
 
 def get_month_data(month_name):
-    url = f"https://docs.google.com/spreadsheets/d/{1SB41Sj9syqUObKsu3S8VKNAdTkm_J2rV0Brk7OiinfU}/gviz/tq?tqx=out:json&sheet={SHEET_NAME}"
+    url = f"https://docs.google.com/spreadsheets/d/{1SB41Sj9syqUObKsu3S8VKNAdTkm_J2rV0Brk7OiinfU}/gviz/tq?tqx=out:json&sheet={milk_data}"
     res = requests.get(url)
     text = res.text
 
@@ -49,6 +49,7 @@ def month_data(month_name):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
+
 
 
 
